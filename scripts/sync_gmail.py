@@ -1,25 +1,32 @@
 import os
 import json
-import base64
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 SCHEDULE_FILE = "schedule.json"
 
-def get_gmail_service():
-    """Initializes and returns the Gmail API service using GitHub Actions secrets."""
-    creds_json = os.environ.get("GMAIL_CREDENTIALS")
-    if not creds_json:
-        raise ValueError("GMAIL_CREDENTIALS environment variable not found.")
+def get_services():
+    """Initializes and returns Gmail API instances for all configured accounts."""
+    services = []
+    # Looks for GMAIL_CREDENTIALS, GMAIL_CREDENTIALS_2, GMAIL_CREDENTIALS_3, etc.
+    env_keys = [k for k in os.environ.keys() if k.startswith("GMAIL_CREDENTIALS")]
     
-    creds_info = json.loads(creds_json)
-    creds = Credentials.from_authorized_user_info(creds_info)
-    return build("gmail", "v1", credentials=creds)
+    for key in sorted(env_keys):
+        creds_json = os.environ.get(key)
+        if creds_json:
+            try:
+                creds_info = json.loads(creds_json)
+                creds = Credentials.from_authorized_user_info(creds_info)
+                service = build("gmail", "v1", credentials=creds)
+                services.append(service)
+                print(f"Successfully connected account via {key}")
+            except Exception as e:
+                print(f"Error initializing credentials for {key}: {e}")
+                
+    return services
 
-def fetch_relevant_emails(service):
-    """Searches inbox for recent unread or important schedule emails."""
-    # Query can be customized to look for specific keywords, senders, or labels
-    query = "label:UNREAD (flight OR exam OR makeup OR schedule OR padrón)"
+def fetch_emails_from_service(service):
+    query = "label:UNREAD (flight OR exam OR makeup OR schedule OR padrón OR booking)"
     results = service.users().messages().list(userId="me", q=query, maxResults=5).execute()
     messages = results.get("messages", [])
     
@@ -34,56 +41,48 @@ def fetch_relevant_emails(service):
                 subject = header["value"]
                 break
                 
-        # Extract snippet or body snippet as description
-        snippet = msg.get("snippet", "No description available.")
+        snippet = msg.get("snippet", "No details available.")
         
-        # Simple heuristic mapping (you can customize this pattern matching)
         item_type = "note"
         badge = "To do"
-        if "flight" in subject.lower() or "vueling" in subject.lower() or "air europa" in subject.lower():
+        subj_lower = subject.lower()
+        if "flight" in subj_lower or "vueling" in subj_lower or "air europa" in subj_lower or "ryanair" in subj_lower:
             item_type = "flight"
             badge = "Paid"
-        elif "exam" in subject.lower():
+        elif "exam" in subj_lower or "paper" in subj_lower:
             item_type = "exam"
             badge = "Exam"
-        elif "class" in subject.lower() or "makeup" in subject.lower():
+        elif "class" in subj_lower or "makeup" in subj_lower:
             item_type = "class"
             badge = "Class"
+        elif "padrón" in subj_lower or "cita" in subj_lower:
+            item_type = "admin"
+            badge = "Booked"
 
         parsed_items.append({
-            "date": "Auto-Synced",
+            "date": "New Sync",
             "time": "TBD",
             "title": subject,
             "desc": snippet,
             "type": item_type,
             "badge": badge
         })
-        
-        # Optionally mark message as read so it doesn't duplicate next run
-        service.users().messages().batchModify(
-            userId="me",
-            body={'ids': [msg_info["id"]], 'removeLabelIds': ['UNREAD']}
-        ).execute()
-        
+
     return parsed_items
 
 def update_schedule_json(new_items):
-    """Loads schedule.json, appends new items to upcoming events, and saves it back."""
     if not os.path.exists(SCHEDULE_FILE):
-        print("schedule.json not found. Creating a new one.")
         data = {"alerts": [], "upcoming": [], "archive": []}
     else:
         with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
 
     if not new_items:
-        print("No new schedule emails found.")
         return False
 
-    # Prepend or append new items to upcoming list
     for item in new_items:
         data["upcoming"].insert(0, item)
-        print(f"Added item from email: {item['title']}")
+        print(f"Added item: {item['title']}")
 
     with open(SCHEDULE_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -91,14 +90,20 @@ def update_schedule_json(new_items):
     return True
 
 if __name__ == "__main__":
-    try:
-        service = get_gmail_service()
-        new_events = fetch_relevant_emails(service)
-        updated = update_schedule_json(new_events)
-        if updated:
-            print("schedule.json successfully updated.")
-        else:
-            print("No changes made to schedule.json.")
-    except Exception as e:
-        print(f"Error syncing Gmail: {e}")
+    services = get_services()
+    if not services:
+        print("No Gmail credentials found in environment.")
         exit(1)
+
+    all_new_events = []
+    for srv in services:
+        try:
+            events = fetch_emails_from_service(srv)
+            all_new_events.extend(events)
+        except Exception as e:
+            print(f"Error fetching from an email account: {e}")
+
+    if update_schedule_json(all_new_events):
+        print("schedule.json updated successfully across accounts.")
+    else:
+        print("No new schedule emails found across connected accounts.")
