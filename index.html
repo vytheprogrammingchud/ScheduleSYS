@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Master Schedule</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1>Your Name</h1>
+        <p class="subtitle">Exam, Travel & Admin Schedule</p>
+      </div>
+      <div class="clock-box">
+        <div id="clock">00:00:00</div>
+        <div class="timezone">Local Time</div>
+      </div>
+    </header>
+
+    <!-- Top Alert Banner -->
+    <div class="alert-banner">
+      <div class="alert-item">⚠️ <b>Transit Note:</b> Check train status prior to departure on Friday.</div>
+      <div class="alert-item">📌 <b>Pending Admin:</b> Waiting on enrollment certificate stamp from office.</div>
+    </div>
+
+    <!-- Last Updated bar -->
+    <div class="last-updated">Last update: Nov 2026 · Active</div>
+
+    <!-- Active Schedule Section -->
+    <h2>Upcoming Events</h2>
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Item</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="time-col">
+            <div>Fri 13 Nov</div>
+            <div class="sub-time">12:00–15:00</div>
+          </td>
+          <td class="detail-col">
+            <span class="icon">○</span>
+            <div class="item-text">
+              <div class="item-title">SP 101 Make-up Class</div>
+              <div class="item-desc">Room M001 · Replaces cancelled class from Monday.</div>
+            </div>
+          </td>
+          <td><span class="badge badge-class">Class</span></td>
+        </tr>
+        <tr>
+          <td class="time-col">
+            <div>Mon 16 Nov</div>
+            <div class="sub-time">19:35–20:55</div>
+          </td>
+          <td class="detail-col">
+            <span class="icon">↑</span>
+            <div class="item-text">
+              <div class="item-title">Flight UX5434 Málaga → Madrid</div>
+              <div class="item-desc">
+                Booking ref: <b>9LELN5</b> · Terminal 2 · Adib & Ali
+              </div>
+              <div class="links">
+                <a href="#" target="_blank">Download e-ticket</a>
+                <a href="#" target="_blank">Check in</a>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-paid">Paid</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Collapsible Archive for Past Events -->
+    <details class="archive-section">
+      <summary>Archive · Finished Events</summary>
+      <table class="schedule-table archive-table">
+        <tbody>
+          <tr>
+            <td class="time-col">
+              <div>Thu 5 Nov</div>
+              <div class="sub-time">08:40</div>
+            </td>
+            <td class="detail-col">
+              <span class="icon">·</span>
+              <div class="item-text">
+                <div class="item-title">City Registration Desk Appointment</div>
+                <div class="item-desc">Ref: OAC-TETUA/057256693 · Completed</div>
+              </div>
+            </td>
+            <td><span class="badge badge-done">Done</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+
+  <!-- Real-time Clock Script -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
