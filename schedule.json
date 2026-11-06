@@ -1,15 +1,96 @@
 {
   "alerts": [
-    "⚠️ <b>System Status:</b> Automated background email sync active."
+    "<b>Legal Appointment:</b> Padrón appointment on Thu 12 Nov 09:00 at OAC Tetuán (Bring university certificate & signed request)[cite: 1].",
+    "<b>Pending Payment / Refund:</b> Budget car refund €97.91 deadline passed — prepare VISA chargeback if unaddressed[cite: 1]."
   ],
   "upcoming": [
     {
-      "date": "Mon 16 Nov",
-      "time": "19:35–20:55",
-      "title": "Flight UX5434 Málaga → Madrid",
-      "desc": "Booking ref: <b>9LELN5</b>",
+      "date": "Fri 6 Nov",
+      "time": "10:00",
+      "title": "Schiller Registrar Desk Visit",
+      "desc": "Request physical signed & stamped 'certificado de matrícula' in Spanish for Padrón[cite: 1].",
+      "type": "admin",
+      "badge": "To do"
+    },
+    {
+      "date": "Sun 8 Nov",
+      "time": "19:10–20:20",
+      "title": "Air Europa Flight UX5434 Málaga → Madrid",
+      "desc": "Booking: 9LELN5 · Terminal 2 · Adib[cite: 1].",
       "type": "flight",
       "badge": "Paid"
+    },
+    {
+      "date": "Mon 9 Nov",
+      "time": "19:35–20:55",
+      "title": "Vueling Flight VY1009 Madrid → Barcelona",
+      "desc": "Booking: YGJVRY · Terminal 1 · Adib + Ali[cite: 1].",
+      "type": "flight",
+      "badge": "Paid"
+    },
+    {
+      "date": "Mon 9 Nov",
+      "time": "21:00 → Tue 15:30",
+      "title": "Sixt Car Rental - Barcelona T1",
+      "desc": "Booking: 9740644585 · Prepaid €75.01 · Adib driver[cite: 1].",
+      "type": "car",
+      "badge": "Booked"
+    },
+    {
+      "date": "Night 9 Nov",
+      "time": "Check-in ~22:00",
+      "title": "Aparthotel Atenea Vallès",
+      "desc": "Granollers · Booking: 6290584770 · Double room (€88.96)[cite: 1].",
+      "type": "hotel",
+      "badge": "Booked"
+    },
+    {
+      "date": "Tue 10 Nov",
+      "time": "Exam Morning",
+      "title": "Physics Paper 9702/12",
+      "desc": "Candidate 2810 · International Rural School, Llinars del Vallès[cite: 1].",
+      "type": "exam",
+      "badge": "Exam"
+    },
+    {
+      "date": "Tue 10 Nov",
+      "time": "17:30–18:55",
+      "title": "Vueling Flight VY1008 Barcelona → Madrid",
+      "desc": "Booking: YGJVRY · Return trip to Madrid[cite: 1].",
+      "type": "flight",
+      "badge": "Paid"
+    },
+    {
+      "date": "Wed 11 Nov",
+      "time": "15:00–18:00",
+      "title": "GEB1350 Make-up Class",
+      "desc": "Intro to International Business with Jose Velasco · Room M1001[cite: 1].",
+      "type": "class",
+      "badge": "Class"
+    },
+    {
+      "date": "Thu 12 Nov",
+      "time": "09:00",
+      "title": "Padrón Second Appointment",
+      "desc": "OAC Tetuán (C/ Simancas 6) · Ref: OAC-TETUA/057263736[cite: 1].",
+      "type": "admin",
+      "badge": "Booked"
+    },
+    {
+      "date": "Fri 13 Nov",
+      "time": "12:00–15:00",
+      "title": "SP 101 Make-up Class",
+      "desc": "Replaces cancelled class from Mon 9 Nov[cite: 1].",
+      "type": "class",
+      "badge": "Class"
+    },
+    {
+      "date": "Mon 16 Nov",
+      "time": "Regular Class Time",
+      "title": "SP 101 Midterm Exam",
+      "desc": "Taken via Blackboard with Respondus LockDown Browser[cite: 1].",
+      "type": "exam",
+      "badge": "Exam"
     }
   ],
   "archive": []
