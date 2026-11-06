@@ -1,0 +1,16 @@
+{
+  "alerts": [
+    "⚠️ <b>System Status:</b> Automated background email sync active."
+  ],
+  "upcoming": [
+    {
+      "date": "Mon 16 Nov",
+      "time": "19:35–20:55",
+      "title": "Flight UX5434 Málaga → Madrid",
+      "desc": "Booking ref: <b>9LELN5</b>",
+      "type": "flight",
+      "badge": "Paid"
+    }
+  ],
+  "archive": []
+}
