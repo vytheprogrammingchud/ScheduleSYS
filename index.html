@@ -223,3 +223,196 @@
 
     .xp-status-bar {
       background: var(--xp-bg-gray);
+      border-top: 2px groove #fff;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: #444;
+      display: flex;
+      justify-content: space-between;
+    }
+    .archive-section summary {
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #0a246a;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Windows XP Clean Login Screen -->
+  <div id="login-screen" class="xp-logon-box">
+    <div class="logon-right">
+      <div id="error-msg" class="error-msg">Invalid user or password</div>
+      <label for="username">User name:</label>
+      <input type="text" id="username" autocomplete="off" />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" />
+
+      <div class="logon-btn-container">
+        <button class="xp-ok-btn" onclick="attemptLogin()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows XP Dashboard App -->
+  <div id="dashboard-app">
+    <div class="xp-window">
+      <div class="xp-title-bar">
+        <div class="xp-title-text">
+          <span class="xp-icon">💻</span> Ali's efficiency thingy majigy
+        </div>
+        <div class="xp-window-controls">
+          <button class="xp-btn">_</button>
+          <button class="xp-btn">□</button>
+          <button class="xp-btn xp-close" onclick="logout()">✕</button>
+        </div>
+      </div>
+
+      <div class="xp-body">
+        <header class="header">
+          <div>
+            <h1 class="app-title">Ali's efficiency thingy majigy</h1>
+            <p class="subtitle">Exam, travel, and administrative tracking dashboard</p>
+          </div>
+          <div class="clock-box">
+            <div id="clock">--:--:--</div>
+            <div class="timezone">Spain time</div>
+          </div>
+        </header>
+
+        <div id="alert-container" class="urgent-alert-banner"></div>
+        <div class="last-updated" id="last-updated">Loading schedule...</div>
+
+        <h2>Upcoming Events</h2>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Item</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="upcoming-tbody"></tbody>
+        </table>
+
+        <details class="archive-section">
+          <summary>Archive · Finished Events</summary>
+          <table class="schedule-table archive-table">
+            <tbody id="archive-tbody"></tbody>
+          </table>
+        </details>
+      </div>
+
+      <div class="xp-status-bar">
+        <span>System status: Active</span>
+        <span>Sync interval: Every 3 hours</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check session on load
+    if (sessionStorage.getItem("xp_authenticated") === "true") {
+      showDashboard();
+    }
+
+    function attemptLogin() {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value.trim();
+      const err = document.getElementById("error-msg");
+
+      if (u === "Admin" && p === "Aliiztheadminhere") {
+        sessionStorage.setItem("xp_authenticated", "true");
+        showDashboard();
+      } else {
+        err.style.display = "block";
+      }
+    }
+
+    // Allow Enter key to submit login
+    document.getElementById("password").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") attemptLogin();
+    });
+
+    function logout() {
+      sessionStorage.removeItem("xp_authenticated");
+      document.getElementById("dashboard-app").style.display = "none";
+      document.getElementById("login-screen").style.display = "flex";
+    }
+
+    function showDashboard() {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("dashboard-app").style.display = "block";
+      initDashboard();
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const clockEl = document.getElementById('clock');
+      if (clockEl) clockEl.innerText = now.toTimeString().split(' ')[0];
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function initDashboard() {
+      fetch('schedule.json?t=' + new Date().getTime())
+        .then(res => res.json())
+        .then(data => {
+          const alertBox = document.getElementById('alert-container');
+          if (data.alerts && data.alerts.length > 0) {
+            alertBox.style.display = 'block';
+            alertBox.innerHTML = data.alerts.map(a => `
+              <div class="urgent-alert-item">
+                <span class="urgent-badge">CRITICAL</span> ${a}
+              </div>
+            `).join('');
+          } else {
+            alertBox.style.display = 'none';
+          }
+
+          const upcomingBody = document.getElementById('upcoming-tbody');
+          upcomingBody.innerHTML = data.upcoming.map(item => `
+            <tr>
+              <td class="time-col">
+                <div>${item.date}</div>
+                <div class="sub-time">${item.time}</div>
+              </td>
+              <td class="detail-col">
+                <span class="icon">○</span>
+                <div>
+                  <div class="item-title">${item.title}</div>
+                  <div class="item-desc">${item.desc}</div>
+                </div>
+              </td>
+              <td><span class="badge badge-${item.badge.toLowerCase().replace(/\s+/g, '-')}">${item.badge}</span></td>
+            </tr>
+          `).join('');
+
+          if (data.archive && data.archive.length > 0) {
+            const archiveBody = document.getElementById('archive-tbody');
+            archiveBody.innerHTML = data.archive.map(item => `
+              <tr>
+                <td class="time-col"><div>${item.date}</div><div class="sub-time">${item.time}</div></td>
+                <td class="detail-col">
+                  <span class="icon">·</span>
+                  <div>
+                    <div class="item-title">${item.title}</div>
+                    <div class="item-desc">${item.desc}</div>
+                  </div>
+                </td>
+                <td><span class="badge badge-done">Done</span></td>
+              </tr>
+            `).join('');
+          }
+
+          document.getElementById('last-updated').innerText = "Checked every 3 hours. Last update: " + new Date().toLocaleString('en-GB', { timeZone: 'Europe/Madrid' });
+        }).catch(err => {
+          console.error("Could not load schedule.json", err);
+        });
+    }
+  </script>
+</body>
+</html>
