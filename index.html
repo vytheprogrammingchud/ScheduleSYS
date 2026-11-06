@@ -3,37 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ali Chehade - Schedule</title>
+  <title>Ali's efficiency thingy majigy</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div>
-        <h1>Ali Chehade</h1>
-        <p class="subtitle">Exam and travel schedule</p>
+  <div class="xp-window">
+    <!-- Windows XP Title Bar -->
+    <div class="xp-title-bar">
+      <div class="xp-title-text">
+        <span class="xp-icon">💻</span> Ali's efficiency thingy majigy
       </div>
-      <div class="clock-box">
-        <div id="clock">--:--:--</div>
-        <div class="timezone">Spain time</div>
+      <div class="xp-window-controls">
+        <button class="xp-btn">_</button>
+        <button class="xp-btn">□</button>
+        <button class="xp-btn xp-close">✕</button>
       </div>
-    </header>
+    </div>
 
-    <div id="alert-container" class="alert-banner"></div>
-    <div class="last-updated" id="last-updated">Loading schedule...</div>
+    <!-- Window Body -->
+    <div class="xp-body">
+      <header class="header">
+        <div>
+          <h1 class="app-title">Ali's efficiency thingy majigy</h1>
+          <p class="subtitle">Exam, travel, and administrative tracking dashboard</p>
+        </div>
+        <div class="clock-box">
+          <div id="clock">--:--:--</div>
+          <div class="timezone">Spain time</div>
+        </div>
+      </header>
 
-    <h2>Upcoming Events</h2>
-    <table class="schedule-table">
-      <thead><tr><th>When</th><th>Item</th><th>Status</th></tr></thead>
-      <tbody id="upcoming-tbody"></tbody>
-    </table>
+      <!-- Urgent / High-Priority Alert Banner (Red Bar) -->
+      <div id="alert-container" class="urgent-alert-banner"></div>
 
-    <details class="archive-section">
-      <summary>Archive · finished</summary>
-      <table class="schedule-table archive-table">
-        <tbody id="archive-tbody"></tbody>
+      <div class="last-updated" id="last-updated">Loading schedule...</div>
+
+      <h2>Upcoming Events</h2>
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Item</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="upcoming-tbody"></tbody>
       </table>
-    </details>
+
+      <details class="archive-section">
+        <summary>Archive · Finished Events</summary>
+        <table class="schedule-table archive-table">
+          <tbody id="archive-tbody"></tbody>
+        </table>
+      </details>
+    </div>
+
+    <!-- XP Status Bar -->
+    <div class="xp-status-bar">
+      <span>System status: Active</span>
+      <span>Sync interval: Every 3 hours</span>
+    </div>
   </div>
 
   <script>
@@ -44,19 +73,30 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Load dynamic JSON data
     fetch('schedule.json?t=' + new Date().getTime())
       .then(res => res.json())
       .then(data => {
-        // Render alerts
+        // Render urgent red alerts
         const alertBox = document.getElementById('alert-container');
-        alertBox.innerHTML = data.alerts.map(a => `<div class="alert-item">${a}</div>`).join('');
+        if (data.alerts && data.alerts.length > 0) {
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = data.alerts.map(a => `
+            <div class="urgent-alert-item">
+              <span class="urgent-badge">CRITICAL</span> ${a}
+            </div>
+          `).join('');
+        } else {
+          alertBox.style.display = 'none';
+        }
 
-        // Render upcoming
+        // Render upcoming events
         const upcomingBody = document.getElementById('upcoming-tbody');
         upcomingBody.innerHTML = data.upcoming.map(item => `
           <tr>
-            <td class="time-col"><div>${item.date}</div><div class="sub-time">${item.time}</div></td>
+            <td class="time-col">
+              <div>${item.date}</div>
+              <div class="sub-time">${item.time}</div>
+            </td>
             <td class="detail-col">
               <span class="icon">○</span>
               <div>
@@ -64,11 +104,29 @@
                 <div class="item-desc">${item.desc}</div>
               </div>
             </td>
-            <td><span class="badge badge-${item.badge.toLowerCase()}">${item.badge}</span></td>
+            <td><span class="badge badge-${item.badge.toLowerCase().replace(/\s+/g, '-')}">${item.badge}</span></td>
           </tr>
         `).join('');
 
-        document.getElementById('last-updated').innerText = "Checked automatically. Last update: " + new Date().toUTCString();
+        // Render archived events
+        if (data.archive && data.archive.length > 0) {
+          const archiveBody = document.getElementById('archive-tbody');
+          archiveBody.innerHTML = data.archive.map(item => `
+            <tr>
+              <td class="time-col"><div>${item.date}</div><div class="sub-time">${item.time}</div></td>
+              <td class="detail-col">
+                <span class="icon">·</span>
+                <div>
+                  <div class="item-title">${item.title}</div>
+                  <div class="item-desc">${item.desc}</div>
+                </div>
+              </td>
+              <td><span class="badge badge-done">${item.badge}</span></td>
+            </tr>
+          `).join('');
+        }
+
+        document.getElementById('last-updated').innerText = "Checked every 3 hours. Last update: " + new Date().toLocaleString('en-GB', { timeZone: 'Europe/Madrid' });
       });
   </script>
 </body>
