@@ -1,105 +1,87 @@
-function parseEventDateTime(dateStr, timeStr) {
-      // Map month names to numbers (November 2026 based on current context)
-      const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
-      const parts = dateStr.toLowerCase().split(' ');
-      
-      let day = 1;
-      let month = 10; // default to Nov
-      let year = 2026;
+<script>
+  function parseEventDateTime(dateStr, timeStr) {
+    const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+    const parts = dateStr.toLowerCase().split(' ');
+    
+    let day = 1;
+    let month = 10;
+    let year = 2026;
 
-      for (let p of parts) {
-        if (!isNaN(p)) day = parseInt(p);
-        if (months[p] !== undefined) month = months[p];
+    for (let p of parts) {
+      if (!isNaN(p)) day = parseInt(p);
+      if (months[p] !== undefined) month = months[p];
+    }
+
+    let hour = 23, minute = 59;
+    if (timeStr) {
+      const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        hour = parseInt(timeMatch[1]);
+        minute = parseInt(timeMatch[2]);
       }
+    }
 
-      // Parse time (e.g. "19:10–20:20" or "09:00" or "Exam Morning")
-      let hour = 23, minute = 59; // default to end of day if flexible
-      if (timeStr) {
-        const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
-        if (timeMatch) {
-          hour = parseInt(timeMatch[1]);
-          minute = parseInt(timeMatch[2]);
+    return new Date(year, month, day, hour, minute, 0);
+  }
+
+  function initDashboard() {
+    fetch('schedule.json?t=' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        const alertBox = document.getElementById('alert-container');
+        if (data.alerts && data.alerts.length > 0) {
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = data.alerts.map(a => 
+            '<div class="urgent-alert-item"><span class="urgent-badge">CRITICAL</span> ' + a + '</div>'
+          ).join('');
+        } else {
+          alertBox.style.display = 'none';
         }
-      }
 
-      return new Date(year, month, day, hour, minute, 0);
-    }
+        const nowMadrid = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
 
-    function initDashboard() {
-      fetch('schedule.json?t=' + new Date().getTime())
-        .then(res => res.json())
-        .then(data => {
-          const alertBox = document.getElementById('alert-container');
-          if (data.alerts && data.alerts.length > 0) {
-            alertBox.style.display = 'block';
-            alertBox.innerHTML = data.alerts.map(a => `
-              <div class="urgent-alert-item">
-                <span class="urgent-badge">CRITICAL</span> ${a}
-              </div>
-            `).join('');
+        const upcomingList = [];
+        const archiveList = [...(data.archive || [])];
+
+        (data.upcoming || []).forEach(item => {
+          if (item.date.toLowerCase() === 'new sync' || item.date.toLowerCase() === 'upcoming') {
+            upcomingList.push(item);
+            return;
+          }
+
+          const eventDate = parseEventDateTime(item.date, item.time);
+          if (eventDate < nowMadrid) {
+            archiveList.push(item);
           } else {
-            alertBox.style.display = 'none';
+            upcomingList.push(item);
           }
-
-          // Get current time in Madrid
-          const nowMadrid = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
-
-          const upcomingList = [];
-          const archiveList = [...(data.archive || [])];
-
-          // Separate upcoming items into active/future vs past
-          (data.upcoming || []).forEach(item => {
-            if (item.date.toLowerCase() === 'new sync' || item.date.toLowerCase() === 'upcoming') {
-              upcomingList.push(item); // Keep manual/new syncs until scheduled
-              return;
-            }
-
-            const eventDate = parseEventDateTime(item.date, item.time);
-            if (eventDate < nowMadrid) {
-              // Past event -> move to archive
-              archiveList.push(item);
-            } else {
-              upcomingList.push(item);
-            }
-          });
-
-          const upcomingBody = document.getElementById('upcoming-tbody');
-          upcomingBody.innerHTML = upcomingList.map(item => `
-            <tr>
-              <td class="time-col">
-                <div>${item.date}</div>
-                <div class="sub-time">${item.time}</div>
-              </td>
-              <td class="detail-col">
-                <span class="icon">○</span>
-                <div>
-                  <div class="item-title">${item.title}</div>
-                  <div class="item-desc">${item.desc}</div>
-                </div>
-              </td>
-              <td><span class="badge badge-${item.badge.toLowerCase().replace(/\s+/g, '-')}">${item.badge}</span></td>
-            </tr>
-          `).join('');
-
-          if (archiveList.length > 0) {
-            const archiveBody = document.getElementById('archive-tbody');
-            archiveBody.innerHTML = archiveList.map(item => `
-              <tr>
-                <td class="time-col"><div>${item.date}</div><div class="sub-time">${item.time}</div></td>
-                <td class="detail-col">
-                  <span class="icon">·</span>
-                  <div>
-                    <div class="item-title">${item.title}</div>
-                    <div class="item-desc">${item.desc}</div>
-                  </div>
-                </td>
-                <td><span class="badge badge-done">Done</span></td>
-              </tr>
-            `).join('');
-          }
-
-          document.getElementById('last-updated').innerText = "Checked every 3 hours. Last update: " + nowMadrid.toLocaleString('en-GB');
-        }).catch(err => {
-          console.error("Could not load schedule.json", err);
         });
-    }
+
+        const upcomingBody = document.getElementById('upcoming-tbody');
+        upcomingBody.innerHTML = upcomingList.map(item => 
+          '<tr>' +
+            '<td class="time-col"><div>' + item.date + '</div><div class="sub-time">' + item.time + '</div></td>' +
+            '<td class="detail-col"><span class="icon">○</span><div><div class="item-title">' + item.title + '</div><div class="item-desc">' + item.desc + '</div></div></td>' +
+            '<td><span class="badge badge-' + item.badge.toLowerCase().replace(/\s+/g, '-') + '">' + item.badge + '</span></td>' +
+          '</tr>'
+        ).join('');
+
+        if (archiveList.length > 0) {
+          const archiveBody = document.getElementById('archive-tbody');
+          archiveBody.innerHTML = archiveList.map(item => 
+            '<tr>' +
+              '<td class="time-col"><div>' + item.date + '</div><div class="sub-time">' + item.time + '</div></td>' +
+              '<td class="detail-col"><span class="icon">·</span><div><div class="item-title">' + item.title + '</div><div class="item-desc">' + item.desc + '</div></div></td>' +
+              '<td><span class="badge badge-done">Done</span></td>' +
+            '</tr>'
+          ).join('');
+        }
+
+        document.getElementById('last-updated').innerText = "Checked every 3 hours. Last update: " + nowMadrid.toLocaleString('en-GB');
+      }).catch(err => {
+        console.error("Could not load schedule.json", err);
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
