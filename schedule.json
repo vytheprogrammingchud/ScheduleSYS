@@ -1,95 +1,55 @@
 {
   "alerts": [
-    "<b>Legal Appointment:</b> Padrón appointment on Thu 12 Nov 09:00 at OAC Tetuán (Bring university certificate & signed request)."
+    "<b>Weekly Plan:</b> 6 hours of spaced study daily. Gym scheduled Mon–Thu late evening. Friday is no-gym/rest."
   ],
   "upcoming": [
     {
-      "date": "Fri 6 Nov",
-      "time": "10:00",
-      "title": "Schiller Registrar Desk Visit",
-      "desc": "Request physical signed & stamped 'certificado de matrícula' in Spanish for Padrón.",
-      "type": "admin",
-      "badge": "To do"
-    },
-    {
-      "date": "Sun 8 Nov",
-      "time": "19:10–20:20",
-      "title": "Air Europa Flight UX5434 Málaga → Madrid",
-      "desc": "Booking: 9LELN5 · Terminal 2 · Adib.",
-      "type": "flight",
-      "badge": "Paid"
-    },
-    {
-      "date": "Mon 9 Nov",
-      "time": "19:35–20:55",
-      "title": "Vueling Flight VY1009 Madrid → Barcelona",
-      "desc": "Booking: YGJVRY · Terminal 1 · Adib + Ali.",
-      "type": "flight",
-      "badge": "Paid"
-    },
-    {
-      "date": "Mon 9 Nov",
-      "time": "21:00 → Tue 15:30",
-      "title": "Sixt Car Rental - Barcelona T1",
-      "desc": "Booking: 9740644585 · Prepaid €75.01 · Adib driver.",
-      "type": "car",
-      "badge": "Booked"
-    },
-    {
-      "date": "Night 9 Nov",
-      "time": "Check-in ~22:00",
-      "title": "Aparthotel Atenea Vallès",
-      "desc": "Granollers · Booking: 6290584770 · Double room (€88.96).",
-      "type": "hotel",
-      "badge": "Booked"
-    },
-    {
-      "date": "Tue 10 Nov",
-      "time": "Exam Morning",
-      "title": "Physics Paper 9702/12",
-      "desc": "Candidate 2810 · International Rural School, Llinars del Vallès.",
-      "type": "exam",
-      "badge": "Exam"
-    },
-    {
-      "date": "Tue 10 Nov",
-      "time": "17:30–18:55",
-      "title": "Vueling Flight VY1008 Barcelona → Madrid",
-      "desc": "Booking: YGJVRY · Return trip to Madrid.",
-      "type": "flight",
-      "badge": "Paid"
-    },
-    {
-      "date": "Wed 11 Nov",
-      "time": "15:00–18:00",
-      "title": "GEB1350 Make-up Class",
-      "desc": "Intro to International Business with Jose Velasco · Room M1001.",
+      "date": "Monday Routine",
+      "time": "12:00 – 23:30",
+      "title": "Mon: Classes, 4h Study & Gym",
+      "desc": "Int. Business (12:00) · Spanish (15:00) · 1h Cook · 2h Study · 30m Break · 2h Study · Gym (23:30)",
       "type": "class",
-      "badge": "Class"
+      "badge": "Routine"
     },
     {
-      "date": "Thu 12 Nov",
-      "time": "09:00",
-      "title": "Padrón Second Appointment",
-      "desc": "OAC Tetuán (C/ Simancas 6) · Ref: OAC-TETUA/057263736.",
-      "type": "admin",
-      "badge": "Booked"
-    },
-    {
-      "date": "Fri 13 Nov",
-      "time": "12:00–15:00",
-      "title": "SP 101 Make-up Class",
-      "desc": "Replaces cancelled class from Mon 9 Nov.",
+      "date": "Tuesday Routine",
+      "time": "09:00 – 23:00",
+      "title": "Tue: Classes, 4h Study & Gym",
+      "desc": "Programming (09:00) · English (12:00) · 1h Cook · 2h Study · 1h Break · 2h Light Study · Gym (21:30)",
       "type": "class",
-      "badge": "Class"
+      "badge": "Routine"
     },
     {
-      "date": "Mon 16 Nov",
-      "time": "Regular Class Time",
-      "title": "SP 101 Midterm Exam",
-      "desc": "Taken via Blackboard with Respondus LockDown Browser.",
-      "type": "exam",
-      "badge": "Exam"
+      "date": "Wednesday Routine",
+      "time": "10:30 – 23:00",
+      "title": "Wed: 6h Spaced Study & Gym",
+      "desc": "4 x 1.5h Study blocks spaced with 1.5h breaks for lunch, cooking & downtime · Gym (21:30)",
+      "type": "note",
+      "badge": "Routine"
+    },
+    {
+      "date": "Thursday Routine",
+      "time": "10:30 – 23:00",
+      "title": "Thu: 6h Spaced Study & Gym",
+      "desc": "4 x 1.5h Study blocks spaced with generous breaks · Gym (21:30)",
+      "type": "note",
+      "badge": "Routine"
+    },
+    {
+      "date": "Friday Routine",
+      "time": "09:00 – 18:00",
+      "title": "Fri: Joined Class & Light Study",
+      "desc": "Joined Class (09:00) · 2 x 1.5h Study blocks · No Gym / Evening off 🛋️",
+      "type": "class",
+      "badge": "Routine"
+    },
+    {
+      "date": "Weekend Routine",
+      "time": "10:00 – 21:00",
+      "title": "Sat & Sun: 6h Spaced Study",
+      "desc": "4 x 1.5h Blocks throughout the day with long leisure breaks between sessions",
+      "type": "note",
+      "badge": "Routine"
     }
   ],
   "archive": []
